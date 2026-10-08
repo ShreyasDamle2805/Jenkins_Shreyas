@@ -1,0 +1,185 @@
+# Jenkins CI/CD: Flask and Express on EC2
+
+This project contains two applications in one GitHub repository:
+
+**Repository:** [Jenkins_Shreyas](https://github.com/ShreyasDamle2805/Jenkins_Shreyas)
+
+| Application folder | Service | Port | Homepage | Health check |
+| --- | --- | ---: | --- | --- |
+| `flask-backend/` | Flask backend | 5000 | `/` | `/api/health` |
+| `express-frontend/` | Express app | 3000 | `/` | `/health` |
+
+The Jenkins pipelines install dependencies, run tests, and use PM2 to start or
+restart each service. Configure the Jenkins agent on the same EC2 instance as
+the applications, or on an agent with equivalent access.
+
+## Project layout
+
+```text
+Jenkins_CICD_Shreyas_Damle/
+├── flask-backend/
+│   ├── app.py
+│   ├── requirements.txt
+│   ├── test_app.py
+│   └── Jenkinsfile
+├── express-frontend/
+│   ├── server.js
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── test.js
+│   └── Jenkinsfile
+├── evidence/
+│   └── README.md
+├── Jenkins_CICD_Shreyas_Damle_Documentation.docx
+└── README.md
+```
+
+## 1. Prepare the EC2 instance
+
+These commands assume a fresh Ubuntu EC2 instance. Choose an instance size
+suitable for Jenkins and both applications. Running Jenkins on the same small
+instance can exceed free-tier memory limits.
+
+```bash
+sudo apt update
+sudo apt install -y git python3 python3-venv python3-pip curl fontconfig openjdk-21-jre
+```
+
+Install Node.js 20 LTS and PM2 using the official NodeSource setup for Ubuntu:
+
+```bash
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+sudo npm install --global pm2
+```
+
+Install Jenkins from the official Jenkins Debian repository using the current
+instructions at https://www.jenkins.io/doc/book/installing/linux/. The Jenkins
+service needs Java. Allow inbound traffic only from trusted IPs for SSH (22)
+and Jenkins (8080); allow app ports 3000 and 5000 only from intended clients.
+Do not expose Jenkins or SSH to the entire internet.
+
+## 2. Publish and clone the repository
+
+The provided GitHub repository URL is
+https://github.com/ShreyasDamle2805/Jenkins_Shreyas. It is a single repository
+containing both application folders. The project files are being published to
+its `main` branch; use the repository root as the Jenkins SCM source.
+
+Clone once on the EC2 host:
+
+```bash
+git clone --branch main https://github.com/ShreyasDamle2805/Jenkins_Shreyas.git
+cd Jenkins_Shreyas
+```
+
+Install and start the Flask application:
+
+```bash
+cd flask-backend
+python3 -m venv venv
+./venv/bin/pip install -r requirements.txt
+pm2 start "venv/bin/python app.py" --name flask-backend
+cd ..
+```
+
+Install and start the Express application:
+
+```bash
+cd express-frontend
+npm ci
+pm2 start server.js --name express-frontend
+pm2 save
+```
+
+Run PM2 as the same Linux user that owns the application processes. To restore
+that user's saved process list after reboot, run `pm2 startup` as that user and
+then execute the exact `sudo ...` command PM2 prints.
+
+Verify both services locally:
+
+```bash
+curl --fail http://127.0.0.1:5000/api/health
+curl --fail http://127.0.0.1:3000/health
+pm2 status
+```
+
+## 3. Configure Jenkins pipelines
+
+Install Jenkins Pipeline, Git, and GitHub integration plugins. Create two
+Pipeline-from-SCM jobs, both using this repository and branch `main`:
+
+1. `flask-backend`: script path `flask-backend/Jenkinsfile`.
+2. `express-frontend`: script path `express-frontend/Jenkinsfile`.
+
+Both Jenkinsfiles check out the monorepo and run commands from their own
+application subfolder. The Jenkins agent must have `git`, `python3`,
+`python3-venv`, `pip`, `node`, `npm`, `pm2`, and `curl` in its PATH. The agent
+user needs permission to run PM2 and own the application processes. Configure
+PM2 startup for that same account if the apps must survive an EC2 reboot.
+
+Each pipeline checks out the repository, installs dependencies, runs tests,
+deploys with PM2, then calls its local health endpoint. A failed test or health
+check fails that build.
+
+## 4. Configure a GitHub webhook
+
+Since both pipelines use the same repository, configure one webhook in
+**Settings → Webhooks → Add webhook**:
+
+- Payload URL: `http://EC2_PUBLIC_DNS_OR_IP:8080/github-webhook/`
+- Content type: `application/json`
+- Events: **Just the push event**
+- Active: enabled
+
+Ensure Jenkins GitHub webhook support is configured and the EC2 security group
+and host firewall allow inbound webhook traffic. Confirm a successful delivery
+in GitHub and that a push starts the appropriate Jenkins job. For production,
+use HTTPS and restrict webhook access.
+
+## 5. Test locally before deployment
+
+Flask (Python 3.9 or newer):
+
+```bash
+cd flask-backend
+python3 -m venv venv
+./venv/bin/pip install -r requirements.txt
+./venv/bin/python -m pytest -q
+```
+
+Express (Node.js 18 or newer):
+
+```bash
+cd express-frontend
+npm ci
+npm test
+```
+
+## Architecture
+
+```text
+Developer push
+     |
+GitHub: ShreyasDamle2805/Jenkins_Shreyas
+     | one push webhook
+Jenkins (EC2, port 8080)
+     | checkout / install / test / deploy
+    PM2
+   /   \
+Flask :5000        Express :3000
+/api/health          /health
+```
+
+## Submission evidence
+
+The assignment documentation is in
+`Jenkins_CICD_Shreyas_Damle_Documentation.docx`. The `evidence/` folder lists
+screenshots to capture from the actual deployment.
+
+The source code and documentation are published in the GitHub repository
+above. No EC2 deployment or Jenkins build has been run from this workspace.
+The ZIP therefore does not claim successful cloud deployment or contain
+fabricated screenshots. Configure and run both pipelines, add genuine
+EC2/Jenkins screenshots to `evidence/`, then recreate the ZIP for final
+assignment submission.

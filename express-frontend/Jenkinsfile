@@ -1,0 +1,56 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = 'express-frontend'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/ShreyasDamle2805/Jenkins_Shreyas.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                dir('express-frontend') {
+                    sh 'npm ci'
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                dir('express-frontend') {
+                    sh 'npm test'
+                }
+            }
+        }
+
+        stage('Deploy Process') {
+            steps {
+                dir('express-frontend') {
+                    sh '''
+                        if pm2 describe express-frontend > /dev/null 2>&1; then
+                            pm2 restart express-frontend
+                        else
+                            pm2 start server.js --name express-frontend
+                        fi
+                        pm2 save
+                        curl --fail --retry 10 --retry-delay 2 http://127.0.0.1:3000/health
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Express Frontend deployed successfully!'
+        }
+        failure {
+            echo 'Express Frontend deployment failed.'
+        }
+    }
+}
