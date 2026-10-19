@@ -16,9 +16,8 @@ The original pipeline runs completed successfully from commit `f9637b4`:
 - `02-ec2-app-health-checks.txt` — terminal verification record: PM2 showed
   both applications online and both local health endpoints returned healthy.
 - `02-ec2-app-health-checks.png` — terminal screenshot showing both PM2
-  processes online and the Flask health response. The Express command is
-  visible, but its response is below the captured area; see the `.txt` record
-  for both endpoint responses.
+  processes online and both Flask and Express health endpoints returning
+  `{"status":"healthy"}`.
 - `06-github-webhook-push-delivery.txt` — GitHub reported HTTP 200 for the push
   delivery from commit `4e77fb9`; it triggered Flask build #7 and Express build
   #4, both of which finished `SUCCESS`. PM2 and both health endpoints were
