@@ -66,42 +66,19 @@ https://github.com/ShreyasDamle2805/Jenkins_Shreyas. It is a single repository
 containing both application folders. The project files are being published to
 its `main` branch; use the repository root as the Jenkins SCM source.
 
-Clone once on the EC2 host:
-
-```bash
-git clone --branch main https://github.com/ShreyasDamle2805/Jenkins_Shreyas.git
-cd Jenkins_Shreyas
-```
-
-Install and start the Flask application:
-
-```bash
-cd flask-backend
-python3 -m venv venv
-./venv/bin/pip install -r requirements.txt
-pm2 start "venv/bin/python app.py" --name flask-backend
-cd ..
-```
-
-Install and start the Express application:
-
-```bash
-cd express-frontend
-npm ci
-pm2 start server.js --name express-frontend
-pm2 save
-```
-
-Run PM2 as the same Linux user that owns the application processes. To restore
-that user's saved process list after reboot, run `pm2 startup` as that user and
-then execute the exact `sudo ...` command PM2 prints.
+The Jenkins jobs check out the repository and install each application's
+dependencies in their workspace; a separate manual clone or startup is not
+needed. The deployment pipelines run PM2 as the Jenkins service user. To
+restore that user's saved process list after an EC2 reboot, configure PM2
+startup for the `jenkins` user and execute the exact `sudo ...` command PM2
+prints.
 
 Verify both services locally:
 
 ```bash
 curl --fail http://127.0.0.1:5000/api/health
 curl --fail http://127.0.0.1:3000/health
-pm2 status
+sudo -u jenkins -H pm2 status
 ```
 
 ## 3. Configure Jenkins pipelines
@@ -117,10 +94,16 @@ application subfolder. The Jenkins agent must have `git`, `python3`,
 `python3-venv`, `pip`, `node`, `npm`, `pm2`, and `curl` in its PATH. The agent
 user needs permission to run PM2 and own the application processes. Configure
 PM2 startup for that same account if the apps must survive an EC2 reboot.
+The Jenkinsfiles set `JENKINS_NODE_COOKIE=dontKillMe` when starting or
+restarting PM2 processes so Jenkins does not terminate the deployed services
+when a build finishes.
 
 Each pipeline checks out the repository, installs dependencies, runs tests,
 deploys with PM2, then calls its local health endpoint. A failed test or health
-check fails that build.
+check fails that build. Both Jenkinsfiles declare the `githubPush()` trigger;
+install the GitHub plugin and enable the GitHub hook trigger for Git polling
+for each job if your Jenkins configuration requires the job-level trigger to
+be enabled as well.
 
 ## 4. Configure a GitHub webhook
 
@@ -134,8 +117,9 @@ Since both pipelines use the same repository, configure one webhook in
 
 Ensure Jenkins GitHub webhook support is configured and the EC2 security group
 and host firewall allow inbound webhook traffic. Confirm a successful delivery
-in GitHub and that a push starts the appropriate Jenkins job. For production,
-use HTTPS and restrict webhook access.
+in GitHub and that a push starts the appropriate Jenkins job. Verify both jobs
+are configured to build the `main` branch. For production, use HTTPS and
+restrict webhook access.
 
 ## 5. Test locally before deployment
 

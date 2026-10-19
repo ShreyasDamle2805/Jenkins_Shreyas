@@ -1,8 +1,8 @@
 pipeline {
     agent any
 
-    environment {
-        APP_NAME = 'express-frontend'
+    triggers {
+        githubPush()
     }
 
     stages {
@@ -33,9 +33,9 @@ pipeline {
                 dir('express-frontend') {
                     sh '''
                         if pm2 describe express-frontend > /dev/null 2>&1; then
-                            pm2 restart express-frontend
+                            JENKINS_NODE_COOKIE=dontKillMe pm2 restart express-frontend
                         else
-                            pm2 start server.js --name express-frontend
+                            JENKINS_NODE_COOKIE=dontKillMe pm2 start server.js --name express-frontend
                         fi
                         pm2 save
                         curl --fail --retry 10 --retry-delay 2 http://127.0.0.1:3000/health
