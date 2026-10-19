@@ -186,4 +186,8 @@ evidence. The successful delivery and build results are verified in the
 included text record. For production, protect the Jenkins webhook endpoint
 with HTTPS and restrict network access.
 
+The EC2 terminal screenshot is included in `evidence/02-ec2-app-health-checks.png`.
+It shows both PM2 processes online and the Flask health response; the accompanying
+text record contains the successful responses for both Flask and Express.
+
 Webhook test: verifying GitHub push triggers Jenkins.
