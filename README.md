@@ -159,11 +159,23 @@ Flask :5000        Express :3000
 
 The assignment documentation is in
 `Jenkins_CICD_Shreyas_Damle_Documentation.docx`. The `evidence/` folder lists
-screenshots to capture from the actual deployment.
+the deployment status, supplied Jenkins build screenshots, and remaining
+evidence to capture.
 
-The source code and documentation are published in the GitHub repository
-above. No EC2 deployment or Jenkins build has been run from this workspace.
-The ZIP therefore does not claim successful cloud deployment or contain
-fabricated screenshots. Configure and run both pipelines, add genuine
-EC2/Jenkins screenshots to `evidence/`, then recreate the ZIP for final
-assignment submission.
+### Live verification (October 19, 2026)
+
+Both Jenkins pipelines completed successfully on commit `f9637b4`:
+
+- Flask build #6: success; 2 tests passed.
+- Express build #3: success; 2 tests passed.
+- PM2 showed both `flask-backend` and `express-frontend` online.
+- `http://127.0.0.1:5000/api/health` and
+  `http://127.0.0.1:3000/health` both returned `{"status":"healthy"}`.
+
+The checked-in Jenkins screenshots and terminal verification record are in
+`evidence/`. GitHub currently has no webhook configured for this repository.
+Before calling the assignment complete, configure a push webhook, verify a
+successful delivery triggers Jenkins, capture its delivery, and add genuine
+EC2-console and terminal screenshots to `evidence/`. The current submission ZIP
+contains the repository files and the evidence available so far; it does not
+claim webhook verification or include screenshots that have not been captured.

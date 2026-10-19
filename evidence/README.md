@@ -1,22 +1,30 @@
-# Required live evidence (capture after deployment)
+# Deployment evidence
 
-This folder is intentionally empty of screenshots until a real EC2/Jenkins
-deployment has been performed. Do not use mockups or screenshots from a
-different project.
+## Verified on October 19, 2026
 
-Add genuine, legible screenshots here and reference them in the project
-documentation:
+Both pipelines completed successfully from commit `f9637b4`:
 
-1. `01-ec2-instance-running.png` — EC2 console showing the instance state and
-   instance identity. Hide account identifiers if desired.
-2. `02-ec2-app-health-checks.png` — terminal on the deployed host showing
-   `pm2 status` and successful `curl` calls to both local health endpoints.
-3. `03-jenkins-flask-success.png` — Jenkins Flask job build summary and
-   successful test/deploy/health-check stages.
-4. `04-jenkins-express-success.png` — Jenkins Express job build summary and
-   successful test/deploy/health-check stages.
-5. `05-github-webhook-delivery.png` — optional but recommended successful
-   GitHub webhook delivery for each repository.
+- `03-jenkins-flask-build-6.png` — Flask build #6. Its final result was checked
+  from Jenkins after the screenshot was taken.
+- `04-jenkins-express-build-3.png` — Express build #3. Its final result was
+  checked from Jenkins after the screenshot was taken.
+- `02-ec2-app-health-checks.txt` — terminal verification record: PM2 showed
+  both applications online and both local health endpoints returned healthy.
 
-Do not include passwords, access keys, tokens, Jenkins initial admin secrets,
-or other credentials in screenshots.
+The screenshots were supplied during the builds and show their Jenkins pages;
+the final successful results were verified separately from Jenkins build logs.
+
+## Still required for complete assignment evidence
+
+Capture these genuine screenshots from the actual deployment and add them here:
+
+1. `01-ec2-instance-running.png` — EC2 console showing the instance running.
+2. `02-ec2-app-health-checks.png` — terminal showing PM2 status and both
+   successful local health checks. The included `.txt` file is a verification
+   record, not a screenshot.
+3. `05-github-webhook-delivery.png` — GitHub webhook delivery showing success
+   and the resulting Jenkins trigger. No webhook was configured when this
+   evidence set was prepared.
+
+Do not include passwords, access keys, tokens, Jenkins setup secrets, or other
+credentials in screenshots.
