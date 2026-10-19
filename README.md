@@ -179,3 +179,5 @@ complete, configure a push webhook, verify a successful delivery triggers
 Jenkins, and capture that delivery in `evidence/`. The current submission ZIP
 contains the evidence available so far; it does not claim webhook verification
 or include a successful-delivery screenshot.
+
+Webhook test: verifying GitHub push triggers Jenkins.
