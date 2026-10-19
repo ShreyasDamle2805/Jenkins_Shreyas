@@ -172,10 +172,10 @@ Both Jenkins pipelines completed successfully on commit `f9637b4`:
 - `http://127.0.0.1:5000/api/health` and
   `http://127.0.0.1:3000/health` both returned `{"status":"healthy"}`.
 
-The checked-in Jenkins screenshots and terminal verification record are in
-`evidence/`. GitHub currently has no webhook configured for this repository.
-Before calling the assignment complete, configure a push webhook, verify a
-successful delivery triggers Jenkins, capture its delivery, and add genuine
-EC2-console and terminal screenshots to `evidence/`. The current submission ZIP
-contains the repository files and the evidence available so far; it does not
-claim webhook verification or include screenshots that have not been captured.
+The checked-in Jenkins screenshots, EC2 running-instance screenshot, and
+terminal verification record are in `evidence/`. GitHub currently has no
+webhook configured for this repository. Before calling the assignment
+complete, configure a push webhook, verify a successful delivery triggers
+Jenkins, and capture that delivery in `evidence/`. The current submission ZIP
+contains the evidence available so far; it does not claim webhook verification
+or include a successful-delivery screenshot.
