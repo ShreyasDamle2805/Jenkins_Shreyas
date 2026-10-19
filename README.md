@@ -158,9 +158,8 @@ Flask :5000        Express :3000
 ## Submission evidence
 
 The assignment documentation is in
-`Jenkins_CICD_Shreyas_Damle_Documentation.docx`. The `evidence/` folder lists
-the deployment status, supplied Jenkins build screenshots, and remaining
-evidence to capture.
+`Jenkins_CICD_Shreyas_Damle_Documentation.docx`. The `evidence/` folder contains
+deployment records and the supplied EC2 and Jenkins screenshots.
 
 ### Live verification (October 19, 2026)
 
@@ -172,12 +171,19 @@ Both Jenkins pipelines completed successfully on commit `f9637b4`:
 - `http://127.0.0.1:5000/api/health` and
   `http://127.0.0.1:3000/health` both returned `{"status":"healthy"}`.
 
-The checked-in Jenkins screenshots, EC2 running-instance screenshot, and
-terminal verification record are in `evidence/`. GitHub currently has no
-webhook configured for this repository. Before calling the assignment
-complete, configure a push webhook, verify a successful delivery triggers
-Jenkins, and capture that delivery in `evidence/`. The current submission ZIP
-contains the evidence available so far; it does not claim webhook verification
-or include a successful-delivery screenshot.
+### GitHub webhook verification (October 19, 2026)
+
+A push of commit `4e77fb9` successfully triggered the repository webhook
+(delivery `3849213520174407700`, HTTP 200). Both Jenkins jobs ran from the push:
+Flask build #7 and Express build #4 finished `SUCCESS`. After deployment,
+PM2 showed both services online and their health endpoints returned
+`{"status":"healthy"}`. The verification record is in
+`evidence/06-github-webhook-push-delivery.txt`.
+
+The GitHub Webhooks settings screenshot in `evidence/` predates webhook
+configuration and shows the earlier empty state; it is not push-delivery
+evidence. The successful delivery and build results are verified in the
+included text record. For production, protect the Jenkins webhook endpoint
+with HTTPS and restrict network access.
 
 Webhook test: verifying GitHub push triggers Jenkins.

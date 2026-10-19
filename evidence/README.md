@@ -2,7 +2,7 @@
 
 ## Verified on October 19, 2026
 
-Both pipelines completed successfully from commit `f9637b4`:
+The original pipeline runs completed successfully from commit `f9637b4`:
 
 - `03-jenkins-flask-build-6.png` — Flask build #6. Its final result was checked
   from Jenkins after the screenshot was taken.
@@ -15,20 +15,22 @@ Both pipelines completed successfully from commit `f9637b4`:
   of a successful webhook delivery.
 - `02-ec2-app-health-checks.txt` — terminal verification record: PM2 showed
   both applications online and both local health endpoints returned healthy.
+- `06-github-webhook-push-delivery.txt` — GitHub reported HTTP 200 for the push
+  delivery from commit `4e77fb9`; it triggered Flask build #7 and Express build
+  #4, both of which finished `SUCCESS`. PM2 and both health endpoints were
+  checked again after deployment.
 
 The screenshots were supplied during the builds and show their Jenkins pages;
 the final successful results were verified separately from Jenkins build logs.
+The webhook delivery and resulting build outcomes were verified through the
+GitHub API and Jenkins build logs.
 
-## Still required for complete assignment evidence
+## Optional screenshot enhancement
 
-Capture these remaining genuine screenshots from the actual deployment and add
-them here:
-
-1. `02-ec2-app-health-checks.png` — terminal screenshot showing PM2 status and both
-   successful local health checks. The included `.txt` file is a verification
-   record, not a screenshot.
-2. `06-github-webhook-delivery.png` — GitHub webhook delivery showing success
-   and the resulting Jenkins trigger. No webhook is configured yet.
+For additional visual evidence, capture a terminal screenshot showing PM2
+status and both successful local health checks, plus the GitHub push delivery
+and Jenkins build results. The included text files record the actual checks;
+they are not screenshots.
 
 Do not include passwords, access keys, tokens, Jenkins setup secrets, or other
 credentials in screenshots.
